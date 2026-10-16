@@ -53,7 +53,7 @@ for (const role of ["Worker agent", "Orchestrator agent"] as const) {
 		await search.fill("Codex");
 		await expect(search).toHaveValue("Codex");
 		await expect(page.locator(".dialog-overlay")).toHaveCount(0);
-		await page.getByRole("button", { name: "Close settings", exact: true }).click();
+		await page.getByRole("button", { name: "Back", exact: true }).click();
 		await expect(page.getByRole("combobox", { name: "Worker agent", exact: true })).toHaveText(/Codex/);
 		await expect(page.getByRole("combobox", { name: "Orchestrator agent", exact: true })).toHaveText(/Codex/);
 		await expect(page.locator(".dialog-overlay")).toHaveCount(1);
