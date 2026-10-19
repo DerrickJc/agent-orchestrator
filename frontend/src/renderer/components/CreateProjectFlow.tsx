@@ -241,6 +241,8 @@ export function CreateProjectFlow({
 	const setProjectImportStep = (step: ProjectImportStep | null) => dispatchView(step ? { type: "open", view: step } : { type: "closeProjectImport" });
 
 	const showGlobalToast = useUiStore((state) => state.showGlobalToast);
+	// Settings opens as a page in the center pane; this flow stays mounted under it,
+	// so its modals and backdrop step aside instead of covering the page.
 	const settingsOpen = useUiStore((state) => state.settingsModal?.scope === "global");
 	const resetProjectImportState = () => {
 		setProjectValidation(null);
@@ -785,7 +787,7 @@ export function CreateProjectFlow({
 						onCloudBack={() => setOffering("local")}
 						onSignIn={cloudSignIn}
 						onCreateStandaloneAgent={onCreateStandaloneAgent}
-						open={modePickerOpen}
+						open={modePickerOpen && !settingsOpen}
 						onOpenChange={(open) => {
 							if (isBusy) return;
 							setModePickerOpen(open);
@@ -823,7 +825,7 @@ export function CreateProjectFlow({
 							}}
 							onContinue={(next) => void prepareClone(next)}
 							onError={reportProjectError}
-							open={cloneDialogOpen}
+							open={cloneDialogOpen && !settingsOpen}
 							shake={projectImportShake}
 							value={cloneDetails}
 						/>
@@ -832,7 +834,7 @@ export function CreateProjectFlow({
 						disabled={isBusy}
 						error={error}
 						kind={selectedKind}
-						open={folderDialogOpen}
+						open={folderDialogOpen && !settingsOpen}
 						scan={validationScan}
 						validation={projectValidation}
 						isPreparingGit={isPreparingGit}
@@ -905,7 +907,7 @@ export function CreateProjectFlow({
 					}
 				}}
 				onTryWorkspace={tryProjectAsWorkspace}
-				open={projectImportOpen}
+				open={projectImportOpen && !settingsOpen}
 				githubRepository={projectGitHubRepo}
 				remoteUrl={projectRemoteUrl}
 				step={projectImportStep}
