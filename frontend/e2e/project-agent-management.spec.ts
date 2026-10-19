@@ -4,7 +4,7 @@ import { agentReadiness } from "../src/renderer/test/agent-readiness-fixtures";
 import { installFakeAgent } from "./support/fake-bridge";
 
 for (const role of ["Worker agent", "Orchestrator agent"] as const) {
-	test(`renderer: ${role} management releases the clone backdrop and preserves setup @T0`, async ({ page }, testInfo) => {
+	test(`renderer: ${role} management releases the clone backdrop and preserves setup @T0`, async ({ page }) => {
 		await installFakeAgent(page);
 		const cleanupRequests: unknown[] = [];
 		await page.route("http://127.0.0.1:8080/api/v1/**", async (route) => {
@@ -46,7 +46,6 @@ for (const role of ["Worker agent", "Orchestrator agent"] as const) {
 		await page.getByRole("combobox", { name: role, exact: true }).click();
 		await page.getByRole("option", { name: /Manage agents/ }).click();
 		await expect(page.getByTestId("settings-page")).toBeVisible();
-		await page.screenshot({ path: testInfo.outputPath("harness-management.png") });
 		const search = page.getByRole("textbox", { name: "Search harnesses", exact: true });
 		// A real pointer click catches a scrim that a programmatic fill could bypass.
 		await search.click({ timeout: 5_000 });
@@ -56,7 +55,7 @@ for (const role of ["Worker agent", "Orchestrator agent"] as const) {
 		await page.getByRole("button", { name: "Back", exact: true }).click();
 		await expect(page.getByRole("combobox", { name: "Worker agent", exact: true })).toHaveText(/Codex/);
 		await expect(page.getByRole("combobox", { name: "Orchestrator agent", exact: true })).toHaveText(/Codex/);
-		await expect(page.locator(".dialog-overlay")).toHaveCount(1);
+		await expect(page.getByRole("dialog", { name: "Set up project" })).toBeVisible();
 		expect(cleanupRequests).toEqual([]);
 		await page.getByRole("button", { name: "Back to clone details" }).click();
 		await expect.poll(() => cleanupRequests).toEqual([{ path: "/repos/example", preparationId: "prep-management" }]);
